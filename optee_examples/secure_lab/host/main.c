@@ -1,5 +1,8 @@
 #include <Lab_CA.h>
 
+char rsa_encryptData[256] = {0}; // the encrypted temperature data
+uint32_t rsa_encryptLen = 256; // the length of encrypted data
+
 int Data_Read() {
     TEEC_Result res;
 	TEEC_Context ctx;
@@ -51,8 +54,6 @@ int Data_Encrypt() {
 	TEEC_UUID uuid = SECURE_LAB_UUID_ID;
 	uint32_t err_origin;
 
-    char rsa_encryptData[256] = {0};
-    uint32_t rsa_encryptLen = 256;
     /* Initialize a context connecting us to the TEE */
     res = TEEC_InitializeContext(NULL, &ctx);
 	if (res != TEEC_SUCCESS) {
@@ -94,7 +95,15 @@ int Data_Encrypt() {
 }
 
 void Data_Send() {
-
+    char systemCall[1660] = "mosquitto_pub -p 8883 -h 192.168.31.125 --cafile ca.crt -t t1 --debug -m  \""; 
+    char tempbuf[6];
+	for (int i = 0; i < rsa_encryptLen; i++) {
+		sprintf(tempbuf, "0x%02x, ", rsa_encryptData[i]);
+		strncat(systemCall, tempbuf, 6);
+	}
+    strncat(systemCall, "\"", 1);
+    // invoke the system call
+	system(systemCall);
 }
 
 int main(int argc, char *argv[])
@@ -112,8 +121,9 @@ int main(int argc, char *argv[])
 
     /*The data will be sent to the MQTT broker*/
     if (0 == memcmp(argv[1], "3", 1)) {
+        Data_Encrypt();
         Data_Send();
     }
-    
+
     return 0;
 }

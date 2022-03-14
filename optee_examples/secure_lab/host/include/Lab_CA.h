@@ -29,8 +29,6 @@ typedef char           CHAR;     /*< Typedef for char                    */
 #define CMD_PTA_DHT11_READ_DATA           5U     /*< Command ID of using pseudo TA to read DHT11 sensor data */
 #define CMD_RSA_ENC_PKCS1_OPER            6U     /*< Command ID of using RSA algorithm to signa data */
 #define CMD_RSA_DEC_PKCS1_OPER            7U
-#define CMD_RSA_SIGN_PKCS1_OPER           8U
-#define CMD_RSA_VERIFY_PKCS1_OPER         9U
 
 
 #define   FAIL     -1            /* Return value when operation fail */

@@ -128,14 +128,9 @@ void TA_CloseSessionEntryPoint(void __maybe_unused *sess_ctx)
 /*
  * Set RSA Public Key function
  */
- static TEE_Result SetRsaPublicKey(RsaKey* rsaKey) {
+ static TEE_Result SetRsaPublicKey() {
      TEE_Result res = FAIL;
-     rsaKey->Ndata = Publickey2048_N;
-     rsaKey->Edata = Publickey2048_E;
-     rsaKey->Nlen = PublicKey2048Len_N;
-     rsaKey->Elen = PublicKey2048Len_E;
-     rsaKey->padding = TEE_ALG_RSAES_PKCS1_V1_5;
-     maxKeySize = (rsaKey->Nlen)*8U;
+     maxKeySize = (PublicKey2048Len_N)*8U;
      // 1) Clean attribute array
      TEE_MemFill(PublicKeyAttr, 0, 2*(sizeof(TEE_Attribute)));
      // 2) Set attribute[0] data with N data
@@ -165,7 +160,7 @@ void TA_CloseSessionEntryPoint(void __maybe_unused *sess_ctx)
 /*
  * RSA Encryption Operation function
  */
-static TEE_Result RsaEncOper(RsaKey rsaKey, char* inBuf, uint32_t inBufLen, char* outBuf, uint32_t* outBufLen) {
+static TEE_Result RsaEncOper(char* inBuf, uint32_t inBufLen, char* outBuf, uint32_t* outBufLen) {
     int res = FAIL;
     // 1) Allocate the operation handle
     res = TEE_AllocateOperation(&OperationHandle, TEE_ALG_RSAES_PKCS1_V1_5, TEE_MODE_ENCRYPT, maxKeySize);
@@ -253,8 +248,7 @@ static TEE_Result rsa_encrypt(uint32_t param_types, TEE_Param params[4])
 		return TEE_ERROR_BAD_PARAMETERS;
     int T_int; // the integer part of temperature data
     int T_dec; // the decimal part of temperature data
-    char T_str[7]; // XX.XC
-    RsaKey rsaKey; // the key of RSA
+    char T_str[7]; // the string of temperature data
     char* output = NULL; // the encrypted data
     uint32_t outputLen = 0; // the length of encrypted data
 
@@ -293,13 +287,10 @@ static TEE_Result rsa_encrypt(uint32_t param_types, TEE_Param params[4])
     TEE_CloseTASession(session);
     session = TEE_HANDLE_NULL;
     // 4. invoke rsa function
-    // snprintf(T_str, "%2d.%1d C", T_int, T_dec);
-    snprintf(T_str, sizeof(T_str), "%2d.%1d C", pta_params[1].value.a, pta_params[1].value.b);
+    snprintf(T_str, sizeof(T_str), "%2d.%1d C", pta_params[1].value.a, pta_params[1].value.b); // the format
     EMSG("The string is %s", T_str);
-    SetRsaPublicKey(&rsaKey);
-    EMSG("The strlen of string is %d", strlen(T_str));
-    EMSG("The sizeof of string is %d", sizeof(T_str));
-	RsaEncOper(rsaKey, T_str, sizeof(T_str), output, &outputLen);
+    SetRsaPublicKey(); // set the rsa public key into handle
+	RsaEncOper(T_str, sizeof(T_str), output, &outputLen); // do the encryption operation
 
     return TEE_SUCCESS;
 }
