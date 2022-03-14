@@ -143,8 +143,10 @@ optee-examples-final: optee-examples
 	cp ${TEE_SDK_DIR}/optee_examples/rpi3_dht11/host/optee_rpi3_dht11 ./out/rootfs/bin/
 	cp ${TEE_SDK_DIR}/optee_examples/rsa/host/optee_example_rsa ./out/rootfs/bin/
 	cp ${TEE_SDK_DIR}/optee_examples/rsa/ta/*.ta ./out/rootfs/lib/optee_armtz/
-	cp ${TEE_SDK_DIR}/optee_examples/secure_lab/host/optee_example_secure_lab ./out/rootfs/bin/
-	cp ${TEE_SDK_DIR}/optee_examples/secure_lab/ta/*.ta ./out/rootfs/lib/optee_armtz/
+	cp ${TEE_SDK_DIR}/optee_examples/secure_lab_publisher/host/optee_example_secure_lab ./out/rootfs/bin/
+	cp ${TEE_SDK_DIR}/optee_examples/secure_lab_publisher/ta/*.ta ./out/rootfs/lib/optee_armtz/
+	cp ${TEE_SDK_DIR}/optee_examples/secure_lab_subscriber/host/optee_example_secure_lab_sub ./out/rootfs/bin/
+	cp ${TEE_SDK_DIR}/optee_examples/secure_lab_subscriber/ta/*.ta ./out/rootfs/lib/optee_armtz/
 ################################################################################
 # linux
 ################################################################################
